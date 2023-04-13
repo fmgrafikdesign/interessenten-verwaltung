@@ -28,25 +28,17 @@ const login = async () => {
 
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-        .then((result) => {
+        .then(() => {
             router.push({ name: 'index' });
-        }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        //
+        }).catch(() => {
     });
 }
 </script>
 
 <template>
   <div class="login-page flex flex-col gap-4 px-6 justify-center h-full text-center">
-      <p>Bitte melde dich an, um fortzufahren</p>
-    <Button @click="login">Anmelden</Button>
+      <p>Bitte melde dich an, um fortzufahren:</p>
+    <Button class="max-w-lg mx-auto" @click="login">Anmelden</Button>
   </div>
 </template>
 

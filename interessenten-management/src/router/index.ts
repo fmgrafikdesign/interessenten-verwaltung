@@ -3,7 +3,7 @@ import IndexView from '@/views/IndexView.vue'
 import PropertyView from "@/views/PropertyView.vue";
 import InteressentView from "@/views/InteressentView.vue";
 import {usePropertyStore} from "@/stores/property-store";
-import {getCurrentUser, useCurrentUser, useFirebaseAuth} from "vuefire";
+import {getCurrentUser} from "vuefire";
 import LoginView from "@/views/LoginView.vue";
 
 const router = createRouter({

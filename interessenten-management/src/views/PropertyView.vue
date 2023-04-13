@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onBeforeRouteLeave, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import Input from "@/components/Input.vue";
 import {computed, ref} from "vue";
 import {usePropertyStore} from "@/stores/property-store";
