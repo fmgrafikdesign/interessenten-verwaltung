@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useRouter} from "vue-router";
+import {onBeforeRouteLeave, useRouter} from "vue-router";
 import Input from "@/components/Input.vue";
 import {computed, ref} from "vue";
 import {usePropertyStore} from "@/stores/property-store";
@@ -7,6 +7,7 @@ import type { Interessent} from "@/stores/property-store";
 import SearchBar from "@/components/SearchBar.vue";
 import InteressentListItem from "@/components/InteressentListItem.vue";
 import Button from "@/components/Button.vue";
+import { useSnackbarStore } from "@/stores/snackbar-store";
 
 const props = defineProps({
     propertyId: {
@@ -53,17 +54,25 @@ function goToInteressent(interessent: Interessent) {
         },
     })
 }
+
+const snackbar = useSnackbarStore();
+const saveProperty = async () => {
+    await properties.persistProperty(property);
+    snackbar.showSnackbar({
+        text: 'Immobilie gespeichert!',
+    })
+}
 </script>
 
 <template>
     <div class="property-view w-full flex flex-col h-full">
-        <div class="top-navigation flex justify-between p-2 text-xl border-b border-b-gray-300">
+        <div class="top-navigation flex justify-between p-2 border-b border-b-gray-300">
             <button class="back-button" @click="router.push({ name: 'index' })">
                 ◀ Zurück
             </button>
-            <h1>Immobilie</h1>
-            <button class="delete-button" @click="removeProperty">
-                🗑
+            <h1 class="text-xl">Immobilie</h1>
+            <button class="save-button" @click="saveProperty">
+                Speichern 💾
             </button>
         </div>
 

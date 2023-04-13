@@ -9,7 +9,12 @@ interface Props {
 
 const props = defineProps<Props>();
 const formattedDate = computed(() => {
-    const date = new Date(props.interessent.lastEdited);
+    let date;
+    if (props.interessent.lastEdited.seconds) {
+        date = new Date(props.interessent.lastEdited.toDate());
+    } else {
+        date = new Date(props.interessent.lastEdited);
+    }
     return date.toLocaleDateString('de-DE', {dateStyle: 'medium'})
 })
 

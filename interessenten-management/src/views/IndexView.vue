@@ -20,8 +20,8 @@ const sortedProperties = computed(() => filteredProperties.value.sort((a, b) => 
 
 const router = useRouter();
 
-const createNewProperty = () => {
-    const property = properties.addProperty();
+const createNewProperty = async () => {
+    const property = await properties.addProperty();
     goToProperty(property);
 }
 

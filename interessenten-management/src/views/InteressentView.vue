@@ -3,6 +3,7 @@ import Input from "@/components/Input.vue";
 import {useRouter} from "vue-router";
 import {computed} from "vue";
 import {InteressentenStatus, usePropertyStore} from "@/stores/property-store";
+import { useSnackbarStore } from "@/stores/snackbar-store";
 
 const props = defineProps({
     propertyId: {
@@ -30,22 +31,29 @@ const removeInteressent = () => {
 // Update Interessenten last edited on changes to interessent
 properties.$subscribe((mutation) => {
     if (mutation.events.target?.lastEdited) {
-        console.log('target was interessent');
         mutation.events.target.lastEdited = new Date();
     }
 })
+
+const snackbar = useSnackbarStore();
+const saveProperty = async () => {
+    await properties.persistProperty(property);
+    snackbar.showSnackbar({
+        text: 'Interessent gespeichert!',
+    })
+}
 </script>
 
 <template>
     <div class="interessent-view w-full flex flex-col h-full">
 
-        <div class="top-navigation flex justify-between p-2 text-xl border-b border-b-gray-300">
+        <div class="top-navigation flex justify-between p-2 border-b border-b-gray-300">
             <button class="back-button" @click="router.back()">
                 ◀ Zurück
             </button>
-            <h1>Interessent</h1>
-            <button class="delete-button" @click="removeInteressent">
-                Löschen 🗑
+            <h1 class="text-xl">Interessent</h1>
+            <button class="save-button" @click="saveProperty">
+                Speichern 💾
             </button>
         </div>
 

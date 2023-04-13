@@ -1,8 +1,11 @@
 import {defineStore} from "pinia";
 import {computed, unref} from "vue";
-import type { Ref } from "vue";
-import {useLocalStorage} from "@vueuse/core";
+import type { MaybeRef } from '@vueuse/core';
 import { v4 as uuidv4 } from 'uuid';
+import {useCollection} from "vuefire";
+import {db} from "@/firebase";
+import {addDoc, updateDoc, doc, collection} from "firebase/firestore";
+import {getAuth} from "firebase/auth";
 
 export enum InteressentenStatus {
     Angefragt = 'Angefragt',
@@ -45,14 +48,19 @@ export interface Immobilie {
 
 export const usePropertyStore = defineStore('properties', () => {
     //const properties = ref<Immobilie[]>([]);
-    const properties = useLocalStorage<Immobilie[]>('properties', []);
+    // const propertiesFromLocalStorage = useLocalStorage<Immobilie[]>('properties', []);
+    const auth = getAuth();
+
+    const propertiesRef = collection(db, 'properties/' + auth.currentUser?.uid + '/immobilien');
+
+    const properties = useCollection(propertiesRef);
 
     const interessiert = computed(() => (immobilie: Immobilie) => {
         return immobilie.interessenten.filter(interessent => interessiertStatus.includes(interessent.status)).length;
     })
 
-    const addProperty = (property?: any) => {
-        properties.value.push({
+    const addProperty = async (property?: any) => {
+        const doc = await addDoc(propertiesRef, {
             name: '',
             interessenten: [],
             ...property,
@@ -61,9 +69,14 @@ export const usePropertyStore = defineStore('properties', () => {
         return properties.value[properties.value.length - 1];
     }
 
-    const removeProperty = (propertyToRemove: Immobilie | Ref<Immobilie>) => {
+    const removeProperty = (propertyToRemove: MaybeRef<Immobilie>) => {
         const index = properties.value.findIndex(property => property.id === unref(propertyToRemove).id);
         if (index !== -1) properties.value.splice(index, 1);
+    }
+
+    const persistProperty = async (propertyToPersist: MaybeRef<Immobilie>) => {
+        const d = doc(propertiesRef, unref(propertyToPersist).id);
+        await updateDoc(d, unref(propertyToPersist));
     }
 
     const addInteressent = (property: Immobilie) => {
@@ -78,7 +91,7 @@ export const usePropertyStore = defineStore('properties', () => {
         return interessent.surname + ', ' + interessent.firstName;
     });
 
-    const deleteInteressent = (property: Immobilie | Ref<Immobilie>, interessent: Interessent | Ref<Interessent>) => {
+    const deleteInteressent = (property: MaybeRef<Immobilie>, interessent: MaybeRef<Interessent>) => {
         const index = unref(property).interessenten.findIndex(propertyInteressent => propertyInteressent.id === unref(interessent).id )
         if (index !== -1) unref(property).interessenten.splice(index, 1);
     }
@@ -91,5 +104,6 @@ export const usePropertyStore = defineStore('properties', () => {
         addInteressent,
         deleteInteressent,
         removeProperty,
+        persistProperty,
     }
 })

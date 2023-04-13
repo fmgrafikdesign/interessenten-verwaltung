@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import {usePropertyStore} from "@/stores/property-store";
-
-// Pinia storage persist
-const properties = usePropertyStore();
-properties.$subscribe((mutation, state) => {
-
-    localStorage.setItem('cart', JSON.stringify(state))
-})
+import Snackbar from "@/components/Snackbar.vue";
 </script>
 
 <template>
   <RouterView />
+  <Snackbar/>
 </template>
 
 <style>

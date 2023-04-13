@@ -3,6 +3,8 @@ import IndexView from '@/views/IndexView.vue'
 import PropertyView from "@/views/PropertyView.vue";
 import InteressentView from "@/views/InteressentView.vue";
 import {usePropertyStore} from "@/stores/property-store";
+import {getCurrentUser, useCurrentUser, useFirebaseAuth} from "vuefire";
+import LoginView from "@/views/LoginView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,8 +38,24 @@ const router = createRouter({
           return { name: 'index' };
         }
       }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      beforeEnter: async () => {
+        const user = await getCurrentUser();
+        if (user) return false;
+      }
     }
   ]
+})
+
+router.beforeEach(async (to) => {
+  const user = await getCurrentUser();
+  if (!user && to.name !== 'login') {
+    return { name: 'login' };
+  }
 })
 
 export default router
