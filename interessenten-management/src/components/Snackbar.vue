@@ -1,7 +1,7 @@
 <template>
   <teleport to="#app">
     <transition name="slide-fade">
-      <div v-if="snackbar.snack" class="snackbar bg-green-500">
+      <div v-if="snackbar.snack" class="snackbar bg-green-500" v-bind="$attrs">
         <p>{{ snackbar.snack.text }}</p>
       </div>
     </transition>
@@ -21,7 +21,7 @@ const snackbar = useSnackbarStore();
   left: 50%;
   transform: translateX(-50%);
   border-radius: 4px;
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.20), 0 15px 12px rgba(0,0,0,0.12);
   display: flex;
   align-items: center;
   padding: 8px 16px 8px 8px;

@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@iconify/json": "^2.2.51",
+    "@vue/compiler-sfc": "^3.2.47",
+    "unplugin-icons": "^0.16.1",
+    "unplugin-vue-components": "^0.24.1"
+  }
+}
