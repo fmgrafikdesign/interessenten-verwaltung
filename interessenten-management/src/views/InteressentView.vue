@@ -94,6 +94,11 @@ function goToInteressent(interessent) {
                         class='col-span-2'
                     ></Input>
                     <Input
+                      v-model='interessent.email'
+                      placeholder='E-Mail-Adresse'
+                      class='col-span-2'
+                    ></Input>
+                    <Input
                         v-model='interessent.notes'
                         placeholder='Notizen'
                         class='col-span-2'
@@ -119,7 +124,7 @@ function goToInteressent(interessent) {
                 <div class='remove-interessent-button-wrapper mx-auto'>
                     <button
                         @click='removeInteressent'
-                        class='w-auto inline-block mt-8 underline text-red-500'
+                        class='w-auto inline-block mt-8 mb-8 underline text-red-500'
                     >
                         Interessent löschen
                     </button>
@@ -127,7 +132,10 @@ function goToInteressent(interessent) {
             </template>
         </div>
         <div class='add-property-section border-t p-4 border-t-gray-300'>
-            <Button @click='createNewInteressent'>weiteren Interessenten anlegen</Button>
+            <Button @click='createNewInteressent'>
+                <icon:typcn:user-add-outline />
+                weiteren Interessenten anlegen
+            </Button>
         </div>
     </div>
 </template>

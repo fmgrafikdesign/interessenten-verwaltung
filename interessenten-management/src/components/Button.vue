@@ -18,7 +18,7 @@
   flex
   items-center
   justify-center
-  gap-2
+  gap-1
 "><slot/></button>
 </template>
 

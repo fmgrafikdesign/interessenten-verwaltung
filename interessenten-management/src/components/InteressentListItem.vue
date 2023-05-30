@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import type { Interessent } from '@/stores/property-store'
+import type { Interessent, Immobilie } from '@/stores/property-store'
 import { usePropertyStore } from '@/stores/property-store'
 import { computed } from 'vue'
 
 interface Props {
-  interessent: Interessent
+  interessent: Interessent,
+  property: Immobilie,
 }
 
 const props = defineProps<Props>()
@@ -17,6 +18,8 @@ const formattedDate = computed(() => {
   }
   return date.toLocaleDateString('de-DE', { dateStyle: 'medium' })
 })
+
+const mailSubjectString = computed(() => 'Ihre Anfrage bzgl. "' + props.property.name + '"')
 
 const properties = usePropertyStore()
 </script>
@@ -37,13 +40,22 @@ const properties = usePropertyStore()
           {{ interessent.status }}
         </span>
       </span>
+      <span class="contact-actions flex gap-4">
       <a
-        v-if="interessent.phone.length"
+        v-if="interessent.email"
+        :href="'mailto:' + interessent.email + '?subject=' + mailSubjectString"
+        class="p-2 bg-orange-500 focus-visible:bg-indigo-400 hover:bg-indigo-400 transition-colors inline-block rounded-full text-white"
+        @click.stop
+      ><icon:material-symbols:mail-outline
+      /></a>
+      <a
+        v-if="interessent.phone"
         :href="'tel:' + interessent.phone"
         class="p-2 bg-indigo-500 focus-visible:bg-indigo-400 hover:bg-indigo-400 transition-colors inline-block rounded-full text-white"
         @click.stop
         ><icon:material-symbols:call
       /></a>
+        </span>
     </span>
 
     <span v-if="interessent.notes.length > 0" class="notes text-gray-700 text-sm">

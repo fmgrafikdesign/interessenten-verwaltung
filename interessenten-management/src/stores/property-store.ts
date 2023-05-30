@@ -38,6 +38,7 @@ export interface Interessent {
   lastEdited: Date | Timestamp,
   notes: string,
   phone: string,
+  email: string,
   status: InteressentenStatus,
   id: string,
 }
@@ -55,7 +56,7 @@ export const usePropertyStore = defineStore("properties", () => {
 
   const propertiesRef = collection(db, "properties/" + auth.currentUser?.uid + "/immobilien");
 
-  const properties = useCollection(propertiesRef);
+  const properties = useCollection<Immobilie>(propertiesRef);
 
   const interessiert = computed(() => (immobilie: Immobilie) => {
     return immobilie.interessenten.filter(interessent => interessiertStatus.includes(interessent.status)).length;
@@ -86,7 +87,13 @@ export const usePropertyStore = defineStore("properties", () => {
 
   const addInteressent = (property: Immobilie) => {
     property.interessenten.push({
-      firstName: "", lastEdited: new Date(), notes: "", phone: "", status: InteressentenStatus.Angefragt, surname: "",
+      firstName: "",
+      lastEdited: new Date(),
+      notes: "",
+      phone: "",
+      email: "",
+      status: InteressentenStatus.Angefragt,
+      surname: "",
       id: uuidv4()
     });
     return property.interessenten[property.interessenten.length - 1];

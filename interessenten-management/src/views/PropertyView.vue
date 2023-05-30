@@ -2,8 +2,8 @@
 import { useRouter } from 'vue-router'
 import Input from '@/components/Input.vue'
 import { computed, ref } from 'vue'
-import type { Interessent } from '@/stores/property-store'
-import { usePropertyStore } from '@/stores/property-store'
+import type { Immobilie, Interessent } from "@/stores/property-store";
+import { InteressentenStatus, usePropertyStore } from "@/stores/property-store";
 import SearchBar from '@/components/SearchBar.vue'
 import InteressentListItem from '@/components/InteressentListItem.vue'
 import Button from '@/components/Button.vue'
@@ -19,7 +19,7 @@ const props = defineProps({
 const router = useRouter()
 const properties = usePropertyStore()
 
-const property = computed(() =>
+const property = computed<Immobilie>(() =>
     properties.all.find((propertyToCheck) => props.propertyId === propertyToCheck.id)
 )
 
@@ -32,6 +32,25 @@ const removeProperty = async () => {
     snackbar.showSnackbar({ text: 'Immobilie gelöscht.' })
 }
 
+const sortOptions = ['Nach Name', 'Nach Status'];
+const sortModel = ref(sortOptions[0]);
+const sortFunctions = [{
+        option: sortOptions[0],
+        function: (a, b) => {
+            const first = a.surname.toUpperCase()
+            const second = b.surname.toUpperCase()
+            return first < second ? -1 : first > second ? 1 : 0
+        }
+    }, {
+        option: sortOptions[1],
+    function: (a: Interessent, b: Interessent) => {
+            const firstStatusIndex = Object.values(InteressentenStatus).findIndex(status => status === a.status);
+        const secondStatusIndex = Object.values(InteressentenStatus).findIndex(status => status === b.status);
+        return firstStatusIndex < secondStatusIndex ? -1 : firstStatusIndex > secondStatusIndex ? 1 : 0
+    }
+    }];
+const sortFn = computed(() => sortFunctions.find(({option}) => option === sortModel.value)?.function);
+
 const searchCriteria = ref('')
 const filteredInteressenten = computed(() =>
     property.value.interessenten
@@ -40,11 +59,7 @@ const filteredInteressenten = computed(() =>
                 interessent.firstName.toUpperCase().includes(searchCriteria.value.toUpperCase()) ||
                 interessent.surname.toUpperCase().includes(searchCriteria.value.toUpperCase())
         )
-        .sort((a, b) => {
-            const first = a.surname.toUpperCase()
-            const second = b.surname.toUpperCase()
-            return first < second ? -1 : first > second ? 1 : 0
-        })
+        .sort(sortFn.value)
 )
 
 const createNewInteressent = () => {
@@ -95,13 +110,22 @@ const saveProperty = async () => {
                 <div class='interessenten-section flex-grow'>
                     <h2 class='text-center text-xl mt-4 mb-2'>Interessenten</h2>
                     <template v-if='property.interessenten.length'>
-                        <SearchBar v-model='searchCriteria' placeholder='Nach Interessenten suchen' />
+                        <div class="search-options flex gap-2">
+                            <SearchBar v-model='searchCriteria' placeholder='Nach Interessenten suchen' />
+                            <div class="sort p-2 rounded shadow w-full flex items-center bg-white flex-shrink-[10]">
+                                <icon:basil:sort-outline/>
+                            <select v-model="sortModel" class="bg-white">
+                                <option v-for="option in sortOptions" :key="option">{{ option }}</option>
+                            </select>
+                            </div>
+                        </div>
                         <template v-if='filteredInteressenten.length'>
                             <div class='property-list flex-grow bg-gray-200 flex flex-col'>
                                 <InteressentListItem
                                     v-for='interessent in filteredInteressenten'
                                     :key='interessent.id'
                                     :interessent='interessent'
+                                    :property="property"
                                     class='mt-2'
                                     @click='goToInteressent(interessent)'
                                 />
@@ -124,7 +148,10 @@ const saveProperty = async () => {
         </div>
 
         <div class='add-property-section border-t p-4 border-t-gray-300'>
-            <Button @click='createNewInteressent'>Interessent anlegen</Button>
+            <Button @click='createNewInteressent'>
+                <icon:typcn:user-add-outline />
+                Interessent anlegen
+            </Button>
         </div>
     </div>
 </template>
