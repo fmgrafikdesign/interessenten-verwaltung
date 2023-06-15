@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type {Immobilie} from "@/stores/property-store";
-import {computed} from "vue";
-import {usePropertyStore} from "@/stores/property-store";
+import type { Immobilie } from '@/stores/property-store'
+import { usePropertyStore } from '@/stores/property-store'
+import { computed } from 'vue'
 
 interface Props {
     property: Immobilie,
 }
 const props = defineProps<Props>();
-const properties = usePropertyStore();
+const properties = usePropertyStore()
+const interessenten = computed(() => props.property.interessenten)
 
 const displayedTitle = computed(() => props.property.name.length > 0 ? props.property.name : false)
 
@@ -39,7 +40,7 @@ const formattedDate = computed(() => {
       </span>
     <span class="flex gap-1">
       <span class="property-interessenten py-1 px-2 bg-blue-200 text-xs rounded-lg">
-          {{ property.interessenten.length }} Kontakt{{ property.interessenten.length !== 1 ? 'e' : '' }}
+          {{ interessenten.length }} Kontakt{{ interessenten.length !== 1 ? 'e' : '' }}
       </span>
     <span class="property-interessenten py-1 px-2 bg-green-200 text-xs rounded-lg">
           {{ properties.interessiert(props.property) }} Interessent{{ properties.interessiert(props.property) !== 1 ? 'en' : '' }}

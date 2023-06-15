@@ -1,7 +1,7 @@
 <script setup>
 import Input from '@/components/Input.vue'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { InteressentenStatus, usePropertyStore } from '@/stores/property-store'
 import { useSnackbarStore } from '@/stores/snackbar-store'
 import Button from '@/components/Button.vue'
@@ -60,8 +60,20 @@ function goToInteressent(interessent) {
         params: {
             propertyId: property.value.id,
             interessentenId: interessent.id
-    }
-  })
+        }
+    })
+}
+
+const deleteButtonVisible = ref(false)
+const deleteButtonActive = ref(false)
+const deleteButtonActivationDelay = 2000
+const startDeleteActivationTimer = () => setTimeout(() => {
+    deleteButtonActive.value = true
+}, deleteButtonActivationDelay)
+
+const promptDelete = () => {
+    deleteButtonVisible.value = true
+    startDeleteActivationTimer()
 }
 </script>
 
@@ -121,13 +133,22 @@ function goToInteressent(interessent) {
                         <label :for='key'>{{ value }}</label>
                     </div>
                 </div>
-                <div class='remove-interessent-button-wrapper mx-auto'>
-                    <button
-                        @click='removeInteressent'
-                        class='w-auto inline-block mt-8 mb-8 underline text-red-500'
-                    >
+                <div class='remove-interessent-button-wrapper mx-auto text-center'>
+                    <button class='w-auto inline-block mb-4 underline text-red-500' @click='promptDelete'>
                         Interessent löschen
                     </button>
+                    <Button
+                        class='bg-red-600 hover:bg-red-800 focus-visible:bg-red-800 opacity-0 transition-all duration-200'
+                        :class='{
+                            "bg-gray-400": !deleteButtonActive,
+                            "pointer-events-none": !deleteButtonActive,
+                            "opacity-100": deleteButtonVisible,
+                        }'
+                        :disabled='!deleteButtonActive'
+                        @click='removeInteressent'
+                    >
+                        Wirklich löschen?
+                    </Button>
                 </div>
             </template>
         </div>

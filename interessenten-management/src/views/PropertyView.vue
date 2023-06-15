@@ -2,8 +2,8 @@
 import { useRouter } from 'vue-router'
 import Input from '@/components/Input.vue'
 import { computed, ref } from 'vue'
-import type { Immobilie, Interessent } from "@/stores/property-store";
-import { InteressentenStatus, usePropertyStore } from "@/stores/property-store";
+import type { Immobilie, Interessent } from '@/stores/property-store'
+import { InteressentenStatus, usePropertyStore } from '@/stores/property-store'
 import SearchBar from '@/components/SearchBar.vue'
 import InteressentListItem from '@/components/InteressentListItem.vue'
 import Button from '@/components/Button.vue'
@@ -55,7 +55,7 @@ const searchCriteria = ref('')
 const filteredInteressenten = computed(() =>
     property.value.interessenten
         .filter(
-            (interessent) =>
+            (interessent: Interessent) =>
                 interessent.firstName.toUpperCase().includes(searchCriteria.value.toUpperCase()) ||
                 interessent.surname.toUpperCase().includes(searchCriteria.value.toUpperCase())
         )
@@ -81,6 +81,18 @@ const snackbar = useSnackbarStore()
 const saveProperty = async () => {
     await properties.persistProperty(property)
     snackbar.showSnackbar({ text: 'Immobilie gespeichert!' })
+}
+
+const deleteButtonVisible = ref(false)
+const deleteButtonActive = ref(false)
+const deleteButtonActivationDelay = 2000
+const startDeleteActivationTimer = () => setTimeout(() => {
+    deleteButtonActive.value = true
+}, deleteButtonActivationDelay)
+
+const promptDelete = () => {
+    deleteButtonVisible.value = true
+    startDeleteActivationTimer()
 }
 </script>
 
@@ -139,10 +151,22 @@ const saveProperty = async () => {
                         <p class='text-center text-lg p-2'>Hier erscheinen deine Interessenten</p>
                     </template>
                 </div>
-                <div class='remove-property-button-wrapper mx-auto'>
-                    <button class='w-auto inline-block mb-8 underline text-red-500' @click='removeProperty'>
+                <div class='remove-property-button-wrapper mx-auto text-center mb-8'>
+                    <button class='w-auto inline-block mb-4 underline text-red-500' @click='promptDelete'>
                         Immobilie löschen
                     </button>
+                    <Button
+                        class='bg-red-600 hover:bg-red-800 focus-visible:bg-red-800 opacity-0 transition-all duration-200'
+                        :class='{
+                            "bg-gray-400": !deleteButtonActive,
+                            "pointer-events-none": !deleteButtonActive,
+                            "opacity-100": deleteButtonVisible,
+                        }'
+                        :disabled='!deleteButtonActive'
+                        @click='removeProperty'
+                    >
+                        Wirklich löschen?
+                    </Button>
                 </div>
             </template>
         </div>
