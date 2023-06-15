@@ -70,6 +70,7 @@ export const usePropertyStore = defineStore('properties', () => {
     const allProperties = useCollection<Immobilie>(propertiesRef)
     // Filter out deleted properties
     const properties = computed(() => allProperties.value?.filter(property => !property.isDeleted) ?? [])
+    const propertiesLoading = computed(() => allProperties.pending.value)
 
     const interessiert = computed(() => (immobilie: Immobilie) => {
         return immobilie.interessenten
@@ -137,6 +138,7 @@ export const usePropertyStore = defineStore('properties', () => {
         addInteressent,
         deleteInteressent,
         removeProperty,
-        persistProperty
+        persistProperty,
+        propertiesLoading
     }
 })
